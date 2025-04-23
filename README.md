@@ -1,114 +1,183 @@
-# EduConnect - Nền tảng học tập đa môn
+# EduConnect - Online Learning Platform
 
-EduConnect là một nền tảng học tập trực tuyến đa môn, lấy cảm hứng từ italki nhưng mở rộng phạm vi sang tất cả các lĩnh vực học tập. Nền tảng này kết nối học viên với giáo viên chuyên môn trong nhiều lĩnh vực khác nhau, cho phép học tập cá nhân hóa và linh hoạt.
+EduConnect is a modern online learning platform that connects students with expert teachers across various subjects. Built with Next.js, MongoDB, and TypeScript.
 
 ![EduConnect Screenshot](screenshots/homepage.png)
 
-## Demo
+## Features
 
-Bạn có thể xem demo trực tuyến tại: [https://yiygzwmv.manus.space](https://yiygzwmv.manus.space)
+- 👥 User Authentication (Teachers & Students)
+- 👨‍🏫 Teacher Profiles & Availability Management
+- 📚 Course Booking System
+- 👥 Group Classes
+- 📊 Learning Progress Tracking
+- 💰 Flexible Payment Options
 
-## Tính năng chính
+## Prerequisites
 
-- **Tìm kiếm giáo viên**: Lọc theo môn học, ngôn ngữ giảng dạy, giá cả và thời gian
-- **Hồ sơ giáo viên**: Xem thông tin chi tiết, đánh giá và lịch dạy của giáo viên
-- **Đặt lịch học**: Chọn thời gian và đặt lịch học với giáo viên
-- **Lớp học nhóm**: Tham gia các lớp học nhóm với nhiều học viên khác
-- **Cộng đồng học tập**: Kết nối với cộng đồng học viên và giáo viên
-- **Đa ngôn ngữ**: Hỗ trợ tiếng Việt và có thể mở rộng sang các ngôn ngữ khác
+Before you begin, ensure you have installed:
 
-## Công nghệ sử dụng
+- Node.js (version 18 or higher)
+- MongoDB (version 4.4 or higher)
+- pnpm (version 8 or higher)
 
-- **Frontend**: Next.js, React, Tailwind CSS
-- **Database**: MongoDB (thiết kế sẵn sàng, chưa triển khai)
-- **Deployment**: Static site hosting
+### Installing Prerequisites
 
-## Cài đặt và chạy dự án
+1. **Node.js**:
 
-### Yêu cầu hệ thống
+   - Download from [Node.js website](https://nodejs.org/)
+   - Choose LTS version
+   - Run the installer
 
-- Node.js 18.0.0 trở lên
-- npm hoặc yarn
+2. **MongoDB**:
 
-### Cài đặt
+   - Download from [MongoDB website](https://www.mongodb.com/try/download/community)
+   - Follow installation instructions for your OS
+   - Ensure MongoDB service is running
 
-1. Clone repository này:
-```bash
-git clone https://github.com/yourusername/educonnect.git
-cd educonnect
-```
+3. **pnpm**:
+   ```bash
+   npm install -g pnpm
+   ```
 
-2. Cài đặt các dependencies:
-```bash
-npm install
-# hoặc
-yarn install
-```
+## Setup Instructions
 
-3. Chạy môi trường phát triển:
-```bash
-npm run dev
-# hoặc
-yarn dev
-```
+1. **Clone the repository**:
 
-4. Mở trình duyệt và truy cập [http://localhost:3000](http://localhost:3000)
+   ```bash
+   git clone https://github.com/yourusername/educonnect.git
+   cd educonnect
+   ```
 
-### Build và triển khai
+2. **Install dependencies**:
 
-1. Build ứng dụng:
-```bash
-npm run build
-# hoặc
-yarn build
-```
+   ```bash
+   pnpm install
+   ```
 
-2. Triển khai thư mục `out` lên dịch vụ hosting tĩnh như Vercel, Netlify, hoặc GitHub Pages.
+3. **Create environment file**:
+   Create a `.env` file in the root directory with:
 
-## Cấu trúc dự án
+   ```env
+   MONGODB_URI=mongodb://localhost:27017/educonnect
+   JWT_SECRET=your-super-secret-key-change-this-in-production
+   NEXT_PUBLIC_API_URL=http://localhost:3000/api
+   ```
+
+4. **Verify MongoDB is running**:
+   - Windows: Check Services app for "MongoDB"
+   - Mac: Run `brew services list`
+   - Linux: Run `sudo systemctl status mongod`
+
+## Running the Application
+
+1. **Start the development server**:
+
+   ```bash
+   pnpm dev
+   ```
+
+2. **Access the application**:
+   - Open [http://localhost:3000](http://localhost:3000)
+   - Create an account or use test credentials:
+     - Teacher: teacher@example.com / password123
+     - Student: student@example.com / password123
+
+## Testing the Features
+
+1. **Register a new account**:
+
+   - Visit /signup
+   - Choose role (Teacher/Student)
+   - Fill in details
+   - Submit form
+
+2. **Login**:
+
+   - Visit /signin
+   - Enter credentials
+   - Choose role
+   - Submit form
+
+3. **Teacher Features**:
+
+   - Update profile
+   - Set availability
+   - Create group classes
+   - View bookings
+
+4. **Student Features**:
+   - Browse teachers
+   - Book classes
+   - Join group classes
+   - Track progress
+
+## Project Structure
 
 ```
 educonnect/
-├── public/               # Tài nguyên tĩnh
-│   └── images/           # Hình ảnh
-├── src/                  # Mã nguồn
-│   ├── app/              # Các trang Next.js
-│   │   ├── booking/      # Trang đặt lịch học
-│   │   ├── group-classes/# Trang lớp học nhóm
-│   │   ├── teachers/     # Trang tìm kiếm và hồ sơ giáo viên
-│   │   ├── layout.tsx    # Layout chung
-│   │   └── page.tsx      # Trang chủ
-│   └── components/       # Các component tái sử dụng
-├── .eslintrc.json        # Cấu hình ESLint
-├── next.config.js        # Cấu hình Next.js
-├── package.json          # Dependencies và scripts
-├── tailwind.config.js    # Cấu hình Tailwind CSS
-└── tsconfig.json         # Cấu hình TypeScript
+├── src/
+│   ├── app/              # Next.js pages
+│   │   ├── api/         # API routes
+│   │   ├── teacher/     # Teacher pages
+│   │   └── student/     # Student pages
+│   ├── components/      # Reusable components
+│   ├── lib/            # Utilities
+│   └── models/         # Database models
+├── public/             # Static files
+└── package.json        # Dependencies
 ```
 
-## Tài liệu thiết kế
+## Common Issues & Solutions
 
-- [Tài liệu yêu cầu](docs/requirements.md)
-- [Thiết kế cơ sở dữ liệu](docs/database_schema.md)
-- [Mockups giao diện](mockups/)
+1. **MongoDB Connection Error**:
 
-## Phát triển trong tương lai
+   - Ensure MongoDB is running
+   - Check MONGODB_URI in .env
+   - Verify network connectivity
 
-- Tích hợp backend thực với MongoDB
-- Hệ thống thanh toán trực tuyến
-- Tích hợp video call cho buổi học trực tuyến
-- Ứng dụng di động (iOS/Android)
-- Hệ thống quản lý học tập (LMS)
-- Tích hợp AI để cá nhân hóa trải nghiệm học tập
+2. **Authentication Issues**:
 
-## Đóng góp
+   - Clear browser localStorage
+   - Check JWT_SECRET in .env
+   - Verify user role matches
 
-Chúng tôi rất hoan nghênh mọi đóng góp! Vui lòng đọc [CONTRIBUTING.md](CONTRIBUTING.md) để biết thêm chi tiết.
+3. **Page Loading Issues**:
+   - Clear Next.js cache: `rm -rf .next`
+   - Reinstall dependencies: `pnpm install`
+   - Restart development server
 
-## Giấy phép
+## Development Workflow
 
-Dự án này được cấp phép theo [MIT License](LICENSE).
+1. **Making Changes**:
 
-## Liên hệ
+   - Create feature branch
+   - Make changes
+   - Test locally
+   - Submit PR
 
-Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ chúng tôi tại [example@educonnect.com](mailto:example@educonnect.com).
+2. **API Testing**:
+
+   ```bash
+   # Register a teacher
+   curl -X POST http://localhost:3000/api/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{"name":"John Doe","email":"john@example.com","password":"password123","role":"teacher"}'
+
+   # Login
+   curl -X POST http://localhost:3000/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"email":"john@example.com","password":"password123","role":"teacher"}'
+   ```
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support, email support@educonnect.com or join our Slack channel.
