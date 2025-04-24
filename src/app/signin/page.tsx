@@ -55,6 +55,9 @@ export default function SignIn() {
         role: 'student'
       });
 
+      // Dispatch auth state change event
+      window.dispatchEvent(new Event('authStateChange'));
+
       // Redirect to the correct profile URL
       router.push(formData.role === 'teacher' ? `/teacher/${data.user.id}` : `/student/${data.user.id}`);
     } catch (err: any) {

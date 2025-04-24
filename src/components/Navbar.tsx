@@ -22,7 +22,9 @@ export default function Navbar() {
   useEffect(() => {
     const checkUser = () => {
       const userStr = localStorage.getItem('user');
-      if (userStr) {
+      const token = localStorage.getItem('token');
+      
+      if (userStr && token) {
         try {
           const userData = JSON.parse(userStr);
           setUser(userData);
@@ -36,12 +38,18 @@ export default function Navbar() {
       setIsLoading(false);
     };
 
+    // Check user on mount
     checkUser();
+
     // Add event listener for storage changes
     window.addEventListener('storage', checkUser);
     
+    // Add event listener for custom event
+    window.addEventListener('authStateChange', checkUser);
+    
     return () => {
       window.removeEventListener('storage', checkUser);
+      window.removeEventListener('authStateChange', checkUser);
     };
   }, []);
 
@@ -49,6 +57,8 @@ export default function Navbar() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
+    // Dispatch custom event
+    window.dispatchEvent(new Event('authStateChange'));
     router.push('/signin');
   };
 

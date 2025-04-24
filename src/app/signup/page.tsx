@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -14,6 +14,17 @@ export default function SignUp() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Clear form data when component mounts
+  useEffect(() => {
+    // Clear any stored credentials
+    setFormData({
+      name: '',
+      email: '',
+      password: '',
+      role: 'student'
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +50,17 @@ export default function SignUp() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
+      // Clear form data before redirecting
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        role: 'student'
+      });
+
+      // Dispatch auth state change event
+      window.dispatchEvent(new Event('authStateChange'));
+
       // Redirect to the correct profile URL
       router.push(formData.role === 'teacher' ? `/teacher/${data.user.id}` : `/student/${data.user.id}`);
     } catch (err: any) {
@@ -58,7 +80,7 @@ export default function SignUp() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleSubmit} autoComplete="off">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                 Full name
@@ -68,7 +90,7 @@ export default function SignUp() {
                   id="name"
                   name="name"
                   type="text"
-                  autoComplete="name"
+                  autoComplete="off"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -86,7 +108,7 @@ export default function SignUp() {
                   id="email"
                   name="email"
                   type="email"
-                  autoComplete="email"
+                  autoComplete="off"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -104,7 +126,7 @@ export default function SignUp() {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="new-password"
+                  autoComplete="off"
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
