@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { LayoutDashboard } from 'lucide-react';
 
 interface User {
   id: string;
@@ -86,9 +88,22 @@ export default function Navbar() {
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="container">
         <nav className="flex justify-between items-center py-4">
-          <Link href="/" className="text-2xl font-bold text-[var(--primary)]">
-            Edu<span className="text-[var(--accent)]">Connect</span>
-          </Link>
+          <div className="flex items-center space-x-8">
+            <Link href="/" className="text-2xl font-bold text-[var(--primary)]">
+              Edu<span className="text-[var(--accent)]">Connect</span>
+            </Link>
+            {user && (
+              <div className="flex items-center space-x-4">
+                <Link 
+                  href={`/${user.role}/${user.id}/dashboard`}
+                  className="flex items-center space-x-2 text-gray-600 hover:text-[var(--primary)] transition-colors"
+                >
+                  <LayoutDashboard className="h-5 w-5" />
+                  <span>Dashboard</span>
+                </Link>
+              </div>
+            )}
+          </div>
           <div className="hidden md:flex gap-8">
             <Link href="/teachers" className="text-[var(--dark)] font-medium hover:text-[var(--primary)] transition-colors">
               Tìm Giáo Viên
