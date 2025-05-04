@@ -8,7 +8,7 @@ EduConnect is a modern online learning platform that connects students with expe
 
 - 👥 User Authentication (Teachers & Students)
 - 👨‍🏫 Teacher Profiles & Availability Management
-- 📚 Course Booking System
+- 📚 Course Booking System pnpm tsx src/scripts/seedLocations.ts
 - 👥 Group Classes
 - 📊 Learning Progress Tracking
 - 💰 Flexible Payment Options
