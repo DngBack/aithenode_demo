@@ -4,25 +4,69 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  role: 'student' | 'teacher';
+  bio: string;
+  subjects: string[];
+  languages: string[];
+  hourlyRate: string;
+  availability: Array<{
+    day: string;
+    startTime: string;
+    endTime: string;
+  }>;
+}
+
+interface ApiResponse {
+  token: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
+  error?: string;
+}
+
 export default function SignUp() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     password: '',
-    role: 'student'
+    role: 'student',
+    bio: '',
+    subjects: [''],
+    languages: [''],
+    hourlyRate: '',
+    availability: [{
+      day: 'Monday',
+      startTime: '09:00',
+      endTime: '17:00'
+    }]
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   // Clear form data when component mounts
   useEffect(() => {
-    // Clear any stored credentials
     setFormData({
       name: '',
       email: '',
       password: '',
-      role: 'student'
+      role: 'student',
+      bio: '',
+      subjects: [''],
+      languages: [''],
+      hourlyRate: '',
+      availability: [{
+        day: 'Monday',
+        startTime: '09:00',
+        endTime: '17:00'
+      }]
     });
   }, []);
 
@@ -30,6 +74,15 @@ export default function SignUp() {
     e.preventDefault();
     setError('');
     setLoading(true);
+
+    // Validate required fields for teachers
+    if (formData.role === 'teacher') {
+      if (!formData.bio || !formData.subjects[0] || !formData.languages[0] || !formData.hourlyRate) {
+        setError('Please fill in all required fields for teacher registration');
+        setLoading(false);
+        return;
+      }
+    }
 
     try {
       const response = await fetch('/api/auth/register', {
@@ -40,7 +93,7 @@ export default function SignUp() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      const data = await response.json() as ApiResponse;
 
       if (!response.ok) {
         throw new Error(data.error || 'Something went wrong');
@@ -55,7 +108,16 @@ export default function SignUp() {
         name: '',
         email: '',
         password: '',
-        role: 'student'
+        role: 'student',
+        bio: '',
+        subjects: [''],
+        languages: [''],
+        hourlyRate: '',
+        availability: [{
+          day: 'Monday',
+          startTime: '09:00',
+          endTime: '17:00'
+        }]
       });
 
       // Dispatch auth state change event
@@ -144,7 +206,7 @@ export default function SignUp() {
                   id="role"
                   name="role"
                   value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value as 'student' | 'teacher' })}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 >
                   <option value="student">Student</option>
@@ -152,6 +214,167 @@ export default function SignUp() {
                 </select>
               </div>
             </div>
+
+            {formData.role === 'teacher' && (
+              <>
+                <div>
+                  <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
+                    Bio
+                  </label>
+                  <div className="mt-1">
+                    <textarea
+                      id="bio"
+                      name="bio"
+                      rows={4}
+                      value={formData.bio}
+                      onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      placeholder="Tell us about yourself and your teaching experience"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="subjects" className="block text-sm font-medium text-gray-700">
+                    Subjects You Teach
+                  </label>
+                  <div className="mt-1">
+                    {formData.subjects.map((subject, index) => (
+                      <div key={index} className="flex gap-2 mb-2">
+                        <input
+                          type="text"
+                          value={subject}
+                          onChange={(e) => {
+                            const newSubjects = [...formData.subjects];
+                            newSubjects[index] = e.target.value;
+                            setFormData({ ...formData, subjects: newSubjects });
+                          }}
+                          className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          placeholder="e.g., Mathematics, Physics"
+                          required
+                        />
+                        {index === formData.subjects.length - 1 && (
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, subjects: [...formData.subjects, ''] })}
+                            className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                          >
+                            +
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="languages" className="block text-sm font-medium text-gray-700">
+                    Languages You Speak
+                  </label>
+                  <div className="mt-1">
+                    {formData.languages.map((language, index) => (
+                      <div key={index} className="flex gap-2 mb-2">
+                        <input
+                          type="text"
+                          value={language}
+                          onChange={(e) => {
+                            const newLanguages = [...formData.languages];
+                            newLanguages[index] = e.target.value;
+                            setFormData({ ...formData, languages: newLanguages });
+                          }}
+                          className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          placeholder="e.g., English, Vietnamese"
+                          required
+                        />
+                        {index === formData.languages.length - 1 && (
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, languages: [...formData.languages, ''] })}
+                            className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                          >
+                            +
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="hourlyRate" className="block text-sm font-medium text-gray-700">
+                    Hourly Rate (USD)
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="number"
+                      id="hourlyRate"
+                      name="hourlyRate"
+                      value={formData.hourlyRate}
+                      onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
+                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      placeholder="e.g., 25"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Availability
+                  </label>
+                  <div className="mt-1 space-y-2">
+                    {formData.availability.map((slot, index) => (
+                      <div key={index} className="flex gap-2">
+                        <select
+                          value={slot.day}
+                          onChange={(e) => {
+                            const newAvailability = [...formData.availability];
+                            newAvailability[index].day = e.target.value;
+                            setFormData({ ...formData, availability: newAvailability });
+                          }}
+                          className="appearance-none block w-1/3 px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        >
+                          {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
+                            <option key={day} value={day}>{day}</option>
+                          ))}
+                        </select>
+                        <input
+                          type="time"
+                          value={slot.startTime}
+                          onChange={(e) => {
+                            const newAvailability = [...formData.availability];
+                            newAvailability[index].startTime = e.target.value;
+                            setFormData({ ...formData, availability: newAvailability });
+                          }}
+                          className="appearance-none block w-1/3 px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        />
+                        <input
+                          type="time"
+                          value={slot.endTime}
+                          onChange={(e) => {
+                            const newAvailability = [...formData.availability];
+                            newAvailability[index].endTime = e.target.value;
+                            setFormData({ ...formData, availability: newAvailability });
+                          }}
+                          className="appearance-none block w-1/3 px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        />
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setFormData({
+                        ...formData,
+                        availability: [...formData.availability, { day: 'Monday', startTime: '09:00', endTime: '17:00' }]
+                      })}
+                      className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    >
+                      Add Time Slot
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
 
             {error && (
               <div className="text-red-600 text-sm">{error}</div>
