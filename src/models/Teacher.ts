@@ -5,6 +5,9 @@ const teacherSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  avatar: {
+    type: String,
+  },
   email: {
     type: String,
     required: true,
@@ -29,25 +32,17 @@ const teacherSchema = new mongoose.Schema({
   hourlyRate: {
     type: Number,
     required: true,
+    min: 0,
   },
   availability: [{
-    day: {
-      type: String,
-      enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-      required: true,
-    },
-    startTime: {
-      type: String,
-      required: true,
-    },
-    endTime: {
-      type: String,
-      required: true,
-    },
+    type: String,
+    enum: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
   }],
   rating: {
     type: Number,
     default: 0,
+    min: 0,
+    max: 5,
   },
   reviews: [{
     studentId: {
@@ -61,10 +56,27 @@ const teacherSchema = new mongoose.Schema({
       default: Date.now,
     },
   }],
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+}, {
+  timestamps: true,
 });
+
+// Update the updatedAt timestamp before saving
+teacherSchema.pre("save", function(next) {
+  this.updatedAt = new Date()
+  next()
+})
 
 export default mongoose.models.Teacher || mongoose.model('Teacher', teacherSchema); 

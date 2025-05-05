@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -49,26 +49,18 @@ interface StudentData {
   }>;
   educationLevel?: string;
   preferredLearningStyle?: string[];
-  settings?: {
-    notifications?: {
-      email?: boolean;
-      sms?: boolean;
-      push?: boolean;
-      classReminders?: boolean;
-      newMessages?: boolean;
-      promotions?: boolean;
-    };
-    privacy?: {
-      profileVisibility?: string;
-      showProgress?: boolean;
-      showReviews?: boolean;
-    };
-  };
+  settings?: any;
   timezone?: string;
   language?: string;
 }
 
-export default function StudentDashboard({ params }: { params: { id: string } }) {
+interface DashboardPageProps {
+  params: {
+    id: string
+  }
+}
+
+export default function StudentDashboardPage({ params }: DashboardPageProps) {
   const router = useRouter();
   const [student, setStudent] = useState<StudentData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -153,28 +145,90 @@ export default function StudentDashboard({ params }: { params: { id: string } })
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {/* Profile Header */}
-        <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={student?.avatar} />
-              <AvatarFallback>{student?.name?.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="text-2xl font-bold">{student?.name}</h2>
-              <p className="text-gray-600">{student?.email}</p>
-              <div className="flex space-x-2 mt-2">
-                {student?.interests?.map((interest, index) => (
-                  <Badge key={index} variant="secondary">{interest}</Badge>
-                ))}
-              </div>
-            </div>
+    <div className="container mx-auto py-8">
+      {/* Profile Header */}
+      <div className="flex flex-col md:flex-row items-center md:items-start gap-6 bg-white rounded-xl shadow p-6 mb-10 border border-gray-100">
+        <Avatar className="h-24 w-24">
+          <AvatarImage src={student?.avatar} />
+          <AvatarFallback>{student?.name?.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div className="flex-1">
+          <h1 className="text-3xl font-bold mb-1">{student?.name}</h1>
+          <p className="text-gray-600 mb-2">{student?.email}</p>
+          <div className="flex flex-wrap gap-2">
+            {student?.interests?.map((interest, idx) => (
+              <Badge key={idx} variant="secondary">{interest}</Badge>
+            ))}
           </div>
         </div>
+      </div>
 
-        {/* Main Dashboard Content */}
+      {/* Main Actions */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-10">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Find Teachers
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4 text-sm text-gray-600">
+              Browse and connect with qualified teachers for your subjects.
+            </p>
+            <Button 
+              onClick={() => router.push(`/student/${params.id}/find-teacher`)}
+              className="w-full"
+            >
+              Find Teachers
+            </Button>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              My Sessions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4 text-sm text-gray-600">
+              View and manage your upcoming and past tutoring sessions.
+            </p>
+            <Button 
+              onClick={() => router.push(`/student/${params.id}/sessions`)}
+              className="w-full"
+            >
+              View Sessions
+            </Button>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5" />
+              My Courses
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4 text-sm text-gray-600">
+              Access your enrolled courses and learning materials.
+            </p>
+            <Button 
+              onClick={() => router.push(`/student/${params.id}/courses`)}
+              className="w-full"
+            >
+              View Courses
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Divider */}
+      <div className="border-t border-gray-200 mb-10" />
+
+      {/* Tabs Section (unchanged, but now visually separated) */}
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
